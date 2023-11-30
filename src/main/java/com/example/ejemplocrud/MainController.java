@@ -15,16 +15,16 @@ import java.sql.*;
 import java.util.ResourceBundle;
 
 
-public class MainController implements Initializable {
+public class MainController implements Initializable { //Heredar las propiedades de la interfaz
 
     @FXML
     private TableView<Peliculas> TableView;
 
     @FXML
-    private TableColumn<Peliculas, String> clasificacionColumn;
+    private TableColumn<Peliculas, String> clasificacionColumn; //Clase y el tipo de dato que va devolver
 
     @FXML
-    private TextField clasificacionFile;
+    private TextField clasificacionFile; //Propiedades del JAVAFX
 
     @FXML
     private Button deleteButton;
@@ -100,7 +100,7 @@ public class MainController implements Initializable {
 
 
 
-    public void executeQuery(String query) {
+    public void executeQuery(String query) { //Base de datos, primero se pone porque es lo mas primordial
         Connection conn = getConnection();
         Statement st;
         try {
@@ -113,15 +113,20 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mostrarPeliculas();
-    }
+    } //Toddo lo que se va a inicializar apenas se ejecute el programa
 
-    public Connection getConnection() {
+    public Connection getConnection() { //Es lo primero que se hace para conectarla a la BD
         Connection conn;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/peliculasbd";
-            String username = "root";
-            String password="2703";
+            Class.forName("com.mysql.cj.jdbc.Driver"); //Este es igual para todos
+            String url = "jdbc:mysql://localhost:3306/peliculasbd"; // Nombre de la BD y todod el link es igual, solo cambia el nombre de la BD, localhost: ubicacion de la BD, el 3306 es el puerto de la conexion.
+            String username = "root"; //Si no lo hemos cambiado, el usuario general es este
+            String password="2703"; //Mirar en la BD si tiene o no contraseña
+
+
+            //phpyMyAdmin es donde administrar las BD en la web, crear nueva y creas tu BD, la BD se llama peliculasbd y la tabla se llama peliculas.
+
+            //
 
             conn = DriverManager.getConnection(url, username,password);
             return conn;
