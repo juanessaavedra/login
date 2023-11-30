@@ -13,7 +13,7 @@ module com.example.ejemplocrud {
     requires mysql.connector.j;
 
     opens com.example.ejemplocrud to javafx.fxml;
-    opens library to javafx.fxml;
+    opens peliculas to javafx.fxml;
     exports com.example.ejemplocrud;
-    exports library;
+    exports peliculas;
 }

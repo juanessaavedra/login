@@ -1,94 +1,104 @@
 package com.example.ejemplocrud;
 
 
-import library.Books;
+import javafx.scene.control.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import peliculas.Peliculas;
 
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 import java.util.ResourceBundle;
-
-
-
 
 
 public class MainController implements Initializable {
 
     @FXML
-    private TextField idField;
+    private TableView<Peliculas> TableView;
 
     @FXML
-    private TextField titleField;
+    private TableColumn<Peliculas, String> clasificacionColumn;
 
     @FXML
-    private TextField authorField;
-
-    @FXML
-    private TextField yearField;
-
-    @FXML
-    private TextField pagesField;
-
-    @FXML
-    private Button insertButton;
-
-    @FXML
-    private Button updateButton;
+    private TextField clasificacionFile;
 
     @FXML
     private Button deleteButton;
 
     @FXML
-    private TableView<Books> TableView;
+    private TableColumn<Peliculas, String> fechaColumn;
 
     @FXML
-    private TableColumn<Books, Integer> idColumn;
+    private TextField fechaField;
 
     @FXML
-    private TableColumn<Books, String> titleColumn;
+    private TableColumn<Peliculas, String> generoColumn;
 
     @FXML
-    private TableColumn<Books, String> authorColumn;
+    private TextField generoField;
+    @FXML
+    private TableColumn<Peliculas, Integer> idColumn;
 
     @FXML
-    private TableColumn<Books, Integer> yearColumn;
+    private TextField idField;
 
     @FXML
-    private TableColumn<Books, Integer> pagesColumn;
+    private Button insertButton;
+
+    @FXML
+    private TableColumn<Peliculas, String> protagonistasColumn;
+
+    @FXML
+    private TextField protagonistasField;
+
+    @FXML
+    private TableColumn<Peliculas, String> titleColumn;
+
+    @FXML
+    private TextField titleField;
+
+    @FXML
+    private Button updateButton;
 
     @FXML
     private void insertButton() {
-        String query = "insert into books values("+idField.getText()+",'"+titleField.getText()+"','"+authorField.getText()+"',"+yearField.getText()+","+pagesField.getText()+")";
+        String query = "INSERT INTO peliculas VALUES(" +
+                idField.getText() + ",'" +
+                titleField.getText() + "','" +
+                protagonistasField.getText() + "','" +
+                generoField.getText() + "','" +
+                clasificacionFile.getText() + "','" +
+                fechaField.getText() + "')";
         executeQuery(query);
-        showBooks();
+        mostrarPeliculas();
     }
-
 
     @FXML
     private void updateButton() {
-        String query = "UPDATE books SET Title='"+titleField.getText()+"',Author='"+authorField.getText()+"',Year="+yearField.getText()+",Pages="+pagesField.getText()+" WHERE ID="+idField.getText()+"";
+        String query = "UPDATE peliculas SET " +
+                "titulo='" + titleField.getText() + "'," +
+                "protagonistas='" + protagonistasField.getText() + "'," +
+                "genero='" + generoField.getText() + "'," +
+                "clasificacion='" + clasificacionFile.getText() + "'," +
+                "fecha='" + fechaField.getText() + "' " +
+                "WHERE ID=" + idField.getText();
         executeQuery(query);
-        showBooks();
+        mostrarPeliculas();
     }
 
     @FXML
     private void deleteButton() {
-        String query = "DELETE FROM books WHERE ID="+idField.getText()+"";
+        String query = "DELETE FROM peliculas WHERE ID=" + idField.getText();
         executeQuery(query);
-        showBooks();
+        mostrarPeliculas();
     }
+
+
+
 
     public void executeQuery(String query) {
         Connection conn = getConnection();
@@ -102,19 +112,18 @@ public class MainController implements Initializable {
     }
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        showBooks();
+        mostrarPeliculas();
     }
 
     public Connection getConnection() {
         Connection conn;
         try {
-           // conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library","root","2703");
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://localhost:3306/library";
+            String url = "jdbc:mysql://localhost:3306/peliculasbd";
             String username = "root";
-            String password = "2703";
+            String password="2703";
 
-            conn = DriverManager.getConnection(url, username, password);
+            conn = DriverManager.getConnection(url, username,password);
             return conn;
         }
         catch (Exception e){
@@ -123,36 +132,36 @@ public class MainController implements Initializable {
         }
     }
 
-    public ObservableList<Books> getBooksList(){
-        ObservableList<Books> booksList = FXCollections.observableArrayList();
+    public ObservableList<Peliculas> getPeliculaList(){
+        ObservableList<Peliculas> peliculasList = FXCollections.observableArrayList();
         Connection connection = getConnection();
-        String query = "SELECT * FROM books ";
+        String query = "SELECT * FROM peliculas ";
         Statement st;
         ResultSet rs;
 
         try {
             st = connection.createStatement();
             rs = st.executeQuery(query);
-            Books books;
+            Peliculas peliculas;
             while(rs.next()) {
-                books = new Books(rs.getInt("Id"),rs.getString("Title"),rs.getString("Author"),rs.getInt("Year"),rs.getInt("Pages"));
-                booksList.add(books);
+                peliculas = new Peliculas(rs.getInt("id"),rs.getString("titulo"),rs.getString("protagonistas"),rs.getString("genero"),rs.getString("clasificacion"),rs.getString("fecha"));
+                peliculasList.add(peliculas);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return booksList;
+        return peliculasList;
     }
 
-    // I had to change ArrayList to ObservableList I didn't find another option to do this but this works :)
-    public void showBooks() {
-        ObservableList<Books> list = getBooksList();
+    public void mostrarPeliculas() {
+        ObservableList<Peliculas> list = getPeliculaList();
 
-        idColumn.setCellValueFactory(new PropertyValueFactory<Books,Integer>("id"));
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Books,String>("title"));
-        authorColumn.setCellValueFactory(new PropertyValueFactory<Books,String>("author"));
-        yearColumn.setCellValueFactory(new PropertyValueFactory<Books,Integer>("year"));
-        pagesColumn.setCellValueFactory(new PropertyValueFactory<Books,Integer>("pages"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<Peliculas,Integer>("id"));
+        titleColumn.setCellValueFactory(new PropertyValueFactory<Peliculas,String>("titulo"));
+        protagonistasColumn.setCellValueFactory(new PropertyValueFactory<Peliculas,String>("protagonistas"));
+        generoColumn.setCellValueFactory(new PropertyValueFactory<Peliculas,String>("genero"));
+        clasificacionColumn.setCellValueFactory(new PropertyValueFactory<Peliculas,String>("clasificacion"));
+        fechaColumn.setCellValueFactory(new PropertyValueFactory<Peliculas, String>("fecha"));
 
         TableView.setItems(list);
     }
